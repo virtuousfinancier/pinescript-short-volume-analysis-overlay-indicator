@@ -1,0 +1,62 @@
+// Short Volume Analysis Overlay
+// @version=6
+// @description Short Volume Analysis Overlay with EMA indicators
+// @author Virtuous Financial Engineering
+// @company Virtuous Finance, LLC
+// @version 1.0.0
+// @date 2024-01-08
+// @last_modified 2024-01-08
+// @product ALL
+// @exchange ALL
+// @precision 2
+
+// License and Copyright Notice
+// =============================================================================
+// Copyright (C) 2024 Virtuous Finance, LLC
+// Author: Virtuous Financial Engineering
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <https://www.gnu.org/licenses/>.
+// =============================================================================
+
+// Description
+// =============================================================================
+// This indicator overlays short volume analysis on the chart with EMA indicators
+// for trend analysis. It includes:
+// - Raw short volume data
+// - 20-day EMA for short-term trend
+// - 50-day EMA for medium-term trend
+// - Volume ratio analysis label
+// =============================================================================
+
+indicator('Short Volume Analysis Overlay', overlay = true, scale = scale.none)
+
+// Get current chart's ticker
+shortVolSymbol = 'FINRA:' + syminfo.ticker + '_SHORT_VOLUME'
+shortVol = request.security(shortVolSymbol, timeframe.period, close)
+
+// Plot short volume on a separate scale with 25% opacity (75% transparency)
+plot(shortVol, title = 'Short Volume', color = color.new(color.blue, 75), linewidth = 1)
+
+// Add exponential moving averages for more responsive trend analysis
+// 20-day EMA for short-term trend
+shortVolEMA = ta.ema(shortVol, 20)
+plot(shortVolEMA, title = 'Short Vol EMA (20)', color = color.red, linewidth = 1)
+
+// 50-day EMA for medium-term trend
+shortVolEMA50 = ta.ema(shortVol, 50)
+plot(shortVolEMA50, title = 'Short Vol EMA (50)', color = color.yellow, linewidth = 1)
+
+// Optional: Add volume ratio analysis
+if barstate.islast
+    label.new(bar_index, shortVol, text = 'Shorts: ' + str.tostring(shortVol, format.volume))
